@@ -1,7 +1,8 @@
 # localhost TLS
 
+Access services on `localhost:8080` via `https://local.example` using `mkcert` and Nginx.
 
-Add "example.com" to hosts file
+Add "local.example" to hosts file
 
     sudo sh -c 'echo "127.0.0.1 local.example" >> /etc/hosts'
 
