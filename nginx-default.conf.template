@@ -1,0 +1,30 @@
+server {
+    listen 80;
+    server_name _;
+
+    # redirect all http request to https
+    rewrite ^/(.*)$ https://$host$request_uri? permanent; 
+}
+
+server {
+  server_name _;
+
+  location / {
+    # host.docker.internal needs to be used instead of localhost
+    # on Windows and Mac hosts which run Docker in a VM
+    proxy_pass http://host.docker.internal:${TARGET_PORT};
+
+    # Set headers so downstream app will know what URL the client is using
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Host $host:443;
+    proxy_set_header X-Forwarded-Port 443;
+    proxy_set_header X-Forwarded-Server $host;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+
+  listen 443 ssl;
+  ssl_certificate /etc/nginx/certs/cert.pem;
+  ssl_certificate_key /etc/nginx/certs/key.pem;
+}
